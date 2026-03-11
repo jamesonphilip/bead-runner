@@ -452,7 +452,7 @@ export default function GameScreen() {
 
         {/* Phase: Setup */}
         {phase === 'setup' && !showTutorial && (
-          <View style={styles.setupPanel}>
+          <ScrollView style={styles.setupPanel} contentContainerStyle={styles.setupContent} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
             <AmperageSlider min={level.amperageRange[0]} max={level.amperageRange[1]} />
             <ElectrodeSelector
               process={level.process}
@@ -475,7 +475,7 @@ export default function GameScreen() {
             <TouchableOpacity style={styles.strikeBtn} onPress={handleStrikeArc}>
               <Text style={styles.strikeBtnText}>⚡ STRIKE ARC</Text>
             </TouchableOpacity>
-          </View>
+          </ScrollView>
         )}
 
         {/* Phase: Welding — minimal HUD */}
@@ -602,8 +602,11 @@ const styles = StyleSheet.create({
   },
   setupPanel: {
     flex: 1,
+  },
+  setupContent: {
     padding: 16,
     gap: 12,
+    paddingBottom: 24,
   },
   setupMeta: {
     flexDirection: 'row',
