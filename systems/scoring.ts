@@ -2,10 +2,10 @@ import { BeadSegment, DefectEvent } from '../store/gameStore';
 import { LevelConfig } from '../data/levels';
 
 export interface ScoreBreakdown {
+  coverage: number;      // 0-100: what % of the joint was filled
   consistency: number;   // 0-100
   fusion: number;        // 0-100
   defectPenalty: number; // 0-100 (deducted)
-  speedBonus: number;    // 0-100
   cleanRun: number;      // 0-100
   total: number;         // 0-100
   grade: string;
@@ -16,8 +16,22 @@ export function calculateScore(
   defects: DefectEvent[],
   level: LevelConfig,
   completionTimeMs: number,
-  expectedTimeMs: number
+  expectedTimeMs: number,
+  jointStartX: number,
+  jointLength: number,
 ): ScoreBreakdown {
+  // Coverage: what fraction of the joint has at least one bead segment
+  // Bucket the joint into 6px slots and count how many are filled
+  const BUCKET = 6;
+  const totalBuckets = Math.ceil(jointLength / BUCKET);
+  const filled = new Set<number>();
+  for (const seg of beads) {
+    filled.add(Math.floor((seg.x - jointStartX) / BUCKET));
+  }
+  // Full credit at 90% coverage, scales linearly from 0
+  const coveragePct = filled.size / totalBuckets;
+  const coverageScore = Math.min(100, (coveragePct / 0.9) * 100);
+
   // Bead consistency: width variance
   const widths = beads.map((b) => b.width);
   const avgWidth = widths.reduce((a, b) => a + b, 0) / (widths.length || 1);
@@ -31,20 +45,16 @@ export function calculateScore(
   // Defect penalty
   const defectScore = Math.max(0, 100 - defects.length * 15 - defects.reduce((a, d) => a + d.severity * 5, 0));
 
-  // Speed bonus
-  const speedRatio = expectedTimeMs / Math.max(completionTimeMs, expectedTimeMs * 0.5);
-  const speedBonus = Math.min(100, speedRatio * 60);
-
   // Clean run bonus (no burn-through or stick)
   const hasBadDefect = defects.some((d) => d.type === 'burn_through' || d.type === 'stick');
   const cleanRun = hasBadDefect ? 0 : 100;
 
   const total = Math.round(
-    consistencyScore * 0.25 +
-    fusionScore * 0.25 +
-    defectScore * 0.30 +
-    speedBonus * 0.10 +
-    cleanRun * 0.10
+    coverageScore   * 0.35 +
+    consistencyScore * 0.20 +
+    fusionScore      * 0.20 +
+    defectScore      * 0.15 +
+    cleanRun         * 0.10
   );
 
   const grade =
@@ -56,5 +66,5 @@ export function calculateScore(
     total >= 65 ? 'C' :
     total >= 60 ? 'D' : 'F';
 
-  return { consistency: consistencyScore, fusion: fusionScore, defectPenalty: defectScore, speedBonus, cleanRun, total, grade };
+  return { coverage: coverageScore, consistency: consistencyScore, fusion: fusionScore, defectPenalty: defectScore, cleanRun, total, grade };
 }

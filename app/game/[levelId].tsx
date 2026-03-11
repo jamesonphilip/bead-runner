@@ -104,7 +104,7 @@ export default function GameScreen() {
     const state = useGameStore.getState();
     const elapsed = Date.now() - startTimeRef.current;
     const expectedMs = (JOINT_LENGTH / 5) * 1000;
-    const sc = calculateScore(state.beadSegments, state.defects, level, elapsed, expectedMs);
+    const sc = calculateScore(state.beadSegments, state.defects, level, elapsed, expectedMs, JOINT_START_X, JOINT_LENGTH);
     setScore(sc);
     completeLevel(level.id, sc.total);
     setPhase('brushing'); // wire brush before report

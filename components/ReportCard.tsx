@@ -60,10 +60,10 @@ export function ReportCard({ score, defects, level, beadSegments, jointStartX, j
       {/* Score breakdown */}
       <View style={styles.breakdown}>
         <Text style={styles.sectionTitle}>SCORE BREAKDOWN</Text>
-        <ScoreRow label="Bead Consistency" value={score.consistency} weight={25} />
-        <ScoreRow label="Fusion Quality" value={score.fusion} weight={25} />
-        <ScoreRow label="Defect Score" value={score.defectPenalty} weight={30} />
-        <ScoreRow label="Speed Bonus" value={score.speedBonus} weight={10} />
+        <ScoreRow label="Joint Coverage" value={score.coverage} weight={35} />
+        <ScoreRow label="Bead Consistency" value={score.consistency} weight={20} />
+        <ScoreRow label="Fusion Quality" value={score.fusion} weight={20} />
+        <ScoreRow label="Defect Score" value={score.defectPenalty} weight={15} />
         <ScoreRow label="Clean Run" value={score.cleanRun} weight={10} />
       </View>
 
