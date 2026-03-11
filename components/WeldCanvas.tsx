@@ -139,9 +139,9 @@ export function WeldCanvas({
   const lean = ROD_LEN * 0.08;
   const rodTipX = gripX + lean;
 
-  // Clamp rod visual tip so rod body never crosses the joint plates
-  const visualTipY = Math.min(rodTipY, jointY - 2);
+  // Rod moves as a rigid unit — no clamping
   const visualTipX = rodTipX;
+  const visualTipY = rodTipY;
 
   // Rotated rod body drawn as a center-positioned rotated View
   const rdx = visualTipX - gripX;
