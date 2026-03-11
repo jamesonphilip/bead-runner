@@ -111,6 +111,17 @@ export default function MainMenu() {
         <View style={styles.footer}>
           <Text style={styles.footerText}>MORE JOBS COMING SOON</Text>
         </View>
+
+        {/* About */}
+        <View style={styles.about}>
+          <Text style={styles.aboutTitle}>ABOUT WELDMASTER</Text>
+          <Text style={styles.aboutBody}>
+            A welding simulation game that teaches real technique — arc length, travel speed, amperage, and defect recognition modeled after actual welding physics.
+          </Text>
+          <Text style={styles.aboutMeta}>
+            Built by Jameson Philip · v1.0
+          </Text>
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -189,4 +200,15 @@ const styles = StyleSheet.create({
   scoreText: { fontSize: 11, fontWeight: '700', marginTop: 6 },
   footer: { alignItems: 'center', marginTop: 8 },
   footerText: { color: '#2a2a2a', fontSize: 10, letterSpacing: 3 },
+  about: {
+    marginTop: 32,
+    paddingTop: 20,
+    borderTopWidth: 1,
+    borderTopColor: '#1a1a1a',
+    alignItems: 'center',
+    gap: 8,
+  },
+  aboutTitle: { color: '#2a2a2a', fontSize: 9, fontWeight: '700', letterSpacing: 3 },
+  aboutBody: { color: '#333', fontSize: 12, textAlign: 'center', lineHeight: 18, paddingHorizontal: 16 },
+  aboutMeta: { color: '#2a2a2a', fontSize: 10, marginTop: 4 },
 });
