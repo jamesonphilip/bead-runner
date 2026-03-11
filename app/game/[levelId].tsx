@@ -414,7 +414,7 @@ export default function GameScreen() {
                 <Text style={styles.tutorialIcon}>3</Text>
                 <View style={styles.tutorialTextCol}>
                   <Text style={styles.tutorialHead}>Control Arc Length</Text>
-                  <Text style={styles.tutorialBody}>Hold the grip and drag — keep your finger above the joint. Watch the 3 dots on the right: middle green dot = ideal arc.</Text>
+                  <Text style={styles.tutorialBody}>Hold the grip below the joint and drag left to right. The rod tip reaches up to the weld. Watch the 3 dots on the right: middle green dot = ideal arc length.</Text>
                 </View>
               </View>
 
@@ -430,7 +430,7 @@ export default function GameScreen() {
                 <Text style={styles.tutorialIcon}>✓</Text>
                 <View style={styles.tutorialTextCol}>
                   <Text style={styles.tutorialHead}>What Good Looks Like</Text>
-                  <Text style={styles.tutorialBody}>A clean, even orange-to-gold bead running straight across the joint. Uniform width, no gaps, no scorched edges.</Text>
+                  <Text style={styles.tutorialBody}>A solid green bead running straight across the joint — green means both arc length and travel speed are dialed in. Orange is partial credit. Dark or patchy means something is off.</Text>
                 </View>
               </View>
             </ScrollView>
@@ -475,7 +475,7 @@ export default function GameScreen() {
               <Text style={styles.stopBtnText}>FINISH WELD</Text>
             </TouchableOpacity>
             <Text style={styles.weldInstruct}>
-              Drag finger along joint · Height = arc length
+              Hold grip below joint · Drag left to right · Green bead = perfect
             </Text>
           </View>
         )}
