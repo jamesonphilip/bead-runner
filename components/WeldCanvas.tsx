@@ -18,6 +18,11 @@ interface WeldCanvasProps {
   staticBeads?: BeadSegment[];
   /** Show brushed/polished bead state */
   polished?: boolean;
+  previewX?: number;
+  previewY?: number;
+  arcIdealMin?: number;
+  arcIdealMax?: number;
+  levelDifficulty?: number;
 }
 
 interface LevelTheme {
@@ -162,10 +167,17 @@ export function WeldCanvas({
   process,
   staticBeads,
   polished = false,
+  previewX,
+  previewY,
+  arcIdealMin,
+  arcIdealMax,
+  levelDifficulty,
 }: WeldCanvasProps) {
   const isWelding = useGameStore((s) => s.isWelding);
-  const torchX = useGameStore((s) => s.torchX);
-  const torchY = useGameStore((s) => s.torchY);
+  const torchXRaw = useGameStore((s) => s.torchX);
+  const torchYRaw = useGameStore((s) => s.torchY);
+  const torchX = torchXRaw > 0 ? torchXRaw : (previewX ?? 0);
+  const torchY = torchYRaw > 0 ? torchYRaw : (previewY ?? 0);
   const beadSegments = useGameStore((s) => s.beadSegments);
   const heatMap = useGameStore((s) => s.heatMap);
   const amperage = useGameStore((s) => s.amperage);
@@ -180,8 +192,10 @@ export function WeldCanvas({
   const isT = jointType === 'T-joint';
 
   // Arc glow: green = ideal, red = too far, orange = too close
-  const isGoodArc = arcLength >= 0.25 && arcLength <= 0.75;
-  const arcColor = arcLength > 0.7 ? '#FF3300' : arcLength < 0.25 ? '#FF8800' : '#00FF88';
+  const _arcIdealMin = arcIdealMin ?? 0.25;
+  const _arcIdealMax = arcIdealMax ?? 0.75;
+  const isGoodArc = arcLength >= _arcIdealMin && arcLength <= _arcIdealMax;
+  const arcColor = arcLength > _arcIdealMax ? '#FF3300' : arcLength < _arcIdealMin ? '#FF8800' : '#00FF88';
   const poolRadius = 6 + amperage / 50;
 
   // Weld quality signal (for pool size/brightness)
@@ -286,6 +300,29 @@ export function WeldCanvas({
         width: jointW, height: 2,
         backgroundColor: theme.jointLineColor,
       }} />
+
+      {/* Weave guide for higher difficulty levels */}
+      {(levelDifficulty ?? 1) >= 3 && !staticBeads && (() => {
+        const amplitude = levelDifficulty! >= 4 ? 10 : 6;
+        const period = levelDifficulty! >= 4 ? 28 : 40;
+        const dots = [];
+        for (let x = jointStartX; x < jointEndX; x += 4) {
+          const phase = ((x - jointStartX) / period) * Math.PI * 2;
+          const yOff = Math.sin(phase) * amplitude;
+          dots.push(
+            <View key={x} style={{
+              position: 'absolute',
+              left: x,
+              top: jointY + yOff - 1,
+              width: 2,
+              height: 2,
+              borderRadius: 1,
+              backgroundColor: 'rgba(255,140,0,0.25)',
+            }} />
+          );
+        }
+        return <>{dots}</>;
+      })()}
 
       {/* Heat glow (sampled every 4px) */}
       {heatMap.length > 0 && heatMap.map((heat, i) => {

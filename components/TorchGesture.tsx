@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
 import {
   GestureDetector,
@@ -45,6 +45,10 @@ export function TorchGesture({
       hapticRef.current = null;
     }
   };
+
+  useEffect(() => {
+    if (!enabled) stopHaptic();
+  }, [enabled]);
 
   const panGesture = Gesture.Pan()
     .runOnJS(true)

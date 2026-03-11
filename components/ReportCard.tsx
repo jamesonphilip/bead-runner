@@ -17,9 +17,10 @@ interface ReportCardProps {
   travelSpeed: number;
   onNext: () => void;
   onRetry: () => void;
+  onMenu: () => void;
 }
 
-export function ReportCard({ score, defects, level, beadSegments, jointStartX, jointEndX, amperage, travelSpeed, onNext, onRetry }: ReportCardProps) {
+export function ReportCard({ score, defects, level, beadSegments, jointStartX, jointEndX, amperage, travelSpeed, onNext, onRetry, onMenu }: ReportCardProps) {
   const passed = score.total >= level.passingScore;
 
   const gradeColor =
@@ -88,6 +89,9 @@ export function ReportCard({ score, defects, level, beadSegments, jointStartX, j
 
       {/* Actions */}
       <View style={styles.actions}>
+        <TouchableOpacity style={styles.menuBtn} onPress={onMenu}>
+          <Text style={styles.menuBtnText}>MENU</Text>
+        </TouchableOpacity>
         <TouchableOpacity style={styles.retryBtn} onPress={onRetry}>
           <Text style={styles.retryBtnText}>RETRY</Text>
         </TouchableOpacity>
@@ -215,6 +219,8 @@ const styles = StyleSheet.create({
   cleanBox: { backgroundColor: '#0d2010', borderRadius: 12, padding: 16, borderWidth: 1, borderColor: '#00FF88', marginBottom: 16, alignItems: 'center' },
   cleanText: { color: '#00FF88', fontSize: 14, fontWeight: '700', letterSpacing: 2 },
   actions: { flexDirection: 'row', gap: 12 },
+  menuBtn: { flex: 1, backgroundColor: '#1a1a1a', borderRadius: 8, padding: 16, alignItems: 'center', borderWidth: 1, borderColor: '#333' },
+  menuBtnText: { color: '#555', fontSize: 14, fontWeight: '700', letterSpacing: 2 },
   retryBtn: { flex: 1, backgroundColor: '#1a1a1a', borderRadius: 8, padding: 16, alignItems: 'center', borderWidth: 1, borderColor: '#333' },
   retryBtnText: { color: '#888', fontSize: 14, fontWeight: '700', letterSpacing: 2 },
   nextBtn: { flex: 2, backgroundColor: '#FF8C00', borderRadius: 8, padding: 16, alignItems: 'center' },

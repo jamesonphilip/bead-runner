@@ -31,7 +31,7 @@ import type { ScoreBreakdown } from '../../systems/scoring';
 const { width: SCREEN_W, height: SCREEN_H } = Dimensions.get('window');
 const CANVAS_H = SCREEN_H * 0.45;
 const JOINT_Y = CANVAS_H / 2;
-const JOINT_PADDING = 40;
+const JOINT_PADDING = 80;
 const JOINT_START_X = JOINT_PADDING;
 const JOINT_END_X = SCREEN_W - JOINT_PADDING;
 const JOINT_LENGTH = JOINT_END_X - JOINT_START_X;
@@ -44,6 +44,11 @@ export default function GameScreen() {
   const { levelId } = useLocalSearchParams<{ levelId: string }>();
   const level = LEVELS.find((l) => l.id === levelId) ?? LEVELS[0];
   const metal = METALS[level.metal] ?? METALS.mild_steel_thick;
+
+  // Arc ideal zone narrows with difficulty: diff1=±0.28, diff2=±0.23, diff3=±0.18, diff4=±0.13, diff5=±0.08
+  const arcTol = Math.max(0.08, 0.33 - level.difficulty * 0.05);
+  const arcIdealMin = 0.5 - arcTol;
+  const arcIdealMax = 0.5 + arcTol;
 
   const [phase, setPhase] = useState<GamePhase>('setup');
   const [selectedElectrode, setSelectedElectrode] = useState(level.electrode);
@@ -212,7 +217,7 @@ export default function GameScreen() {
       // Deposit bead segment if welding — at rod tip X (not handle X)
       if (welding && moved > 0.5) {
         const w = getBeadWidth(amp, speed);
-        const goodArc = arc >= 0.25 && arc <= 0.75;
+        const goodArc = arc >= arcIdealMin && arc <= arcIdealMax;
         const goodSpeed = speed > 2 && speed < 200;
         const quality = (goodArc ? 0.5 : 0) + (goodSpeed ? 0.5 : 0);
         addBeadSegment({
@@ -272,6 +277,9 @@ export default function GameScreen() {
     return (
       <SafeAreaView style={styles.safe}>
         <View style={styles.hud}>
+          <TouchableOpacity style={styles.backBtn} onPress={() => router.replace('/')}>
+            <Text style={styles.backBtnText}>←</Text>
+          </TouchableOpacity>
           <View style={styles.hudCenter}>
             <Text style={styles.levelTitle}>WIRE BRUSH</Text>
             <Text style={styles.processLabel}>Clean the slag before inspection</Text>
@@ -309,6 +317,7 @@ export default function GameScreen() {
           travelSpeed={travelSpeed}
           onNext={handleNext}
           onRetry={handleRetry}
+          onMenu={() => router.replace('/')}
         />
       </SafeAreaView>
     );
@@ -350,15 +359,20 @@ export default function GameScreen() {
               levelEnvironment={level.environment}
               jointType={level.jointType}
               process={level.process}
+              previewX={SCREEN_W / 2 - 20}
+              previewY={CANVAS_H - 80}
+              arcIdealMin={arcIdealMin}
+              arcIdealMax={arcIdealMax}
+              levelDifficulty={level.difficulty}
             />
           </TorchGesture>
 
           {/* Arc guide — 3 dots: far / ideal / close */}
           {phase === 'welding' && (
             <View style={styles.arcGuide}>
-              <View style={[styles.arcDot, { backgroundColor: arcLength > 0.75 ? '#FF3300' : '#1e1e1e' }]} />
-              <View style={[styles.arcDotLarge, { backgroundColor: arcLength >= 0.25 && arcLength <= 0.75 ? '#00FF88' : '#1e1e1e' }]} />
-              <View style={[styles.arcDot, { backgroundColor: arcLength < 0.25 ? '#FF8800' : '#1e1e1e' }]} />
+              <View style={[styles.arcDot, { backgroundColor: arcLength > arcIdealMax ? '#FF3300' : '#1e1e1e' }]} />
+              <View style={[styles.arcDotLarge, { backgroundColor: arcLength >= arcIdealMin && arcLength <= arcIdealMax ? '#00FF88' : '#1e1e1e' }]} />
+              <View style={[styles.arcDot, { backgroundColor: arcLength < arcIdealMin ? '#FF8800' : '#1e1e1e' }]} />
               <Text style={styles.arcGuideLabel}>ARC</Text>
             </View>
           )}
