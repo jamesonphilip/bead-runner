@@ -323,11 +323,11 @@ export function WeldCanvas({
         );
       })}
 
-      {/* Arc weld pool glow at joint — scales with quality */}
+      {/* Arc weld pool glow at joint — centered at rod tip X, joint surface Y */}
       {isWelding && torchX > 0 && (
         <View style={{
           position: 'absolute',
-          left: torchX - poolRadius * 2 * qualityGlow,
+          left: rodTipX - poolRadius * 2 * qualityGlow,
           top: jointY - poolRadius * 2 * qualityGlow,
           width: poolRadius * 4 * qualityGlow,
           height: poolRadius * 4 * qualityGlow,
